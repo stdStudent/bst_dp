@@ -2,6 +2,10 @@
 #define BST_DP_BST_H
 
 #include <iostream>
+#include <vector>
+#include <stack>
+#include <sstream>
+#include <string>
 
 using namespace std;
 
@@ -17,20 +21,20 @@ private:
 
     node* root;
 
-    void _addLeaf(T& key, node* ptr) {
+    void _addLeaf(T& key, D& data, node* ptr) {
         if (root == nullptr) {
-            root = createLeaf(key);
+            root = createLeaf(key, data);
         } else if (key < ptr->key) {
             if (ptr->left != nullptr) {
-                _addLeaf(key, ptr->left);
+                _addLeaf(key, data, ptr->left);
             } else {
-                ptr->left = createLeaf(key);
+                ptr->left = createLeaf(key, data);
             }
         } else if (key > ptr->key) {
             if (ptr->right != nullptr) {
-                _addLeaf(key, ptr->right);
+                _addLeaf(key, data, ptr->right);
             } else {
-                ptr->right = createLeaf(key);
+                ptr->right = createLeaf(key, data);
             }
         } else {
             cout << key << "is already in the bst.\n";
@@ -43,7 +47,7 @@ private:
                 _printInOrder(ptr->left);
             }
 
-            cout << ptr->key << ' ';
+            cout << ptr->key << ':' << ptr->data << ' ';
 
             if (ptr->right != nullptr) {
                 _printInOrder(ptr->right);
@@ -189,6 +193,53 @@ private:
         }
     }
 
+    vector<pair<T, D>> _dump(node* ptr) const {
+        vector<pair<T, D>> result;
+
+        if (root != nullptr) {
+            if (ptr->left != nullptr) {
+                _dump(ptr->left);
+            }
+
+            result.push_back(make_pair(ptr->key, ptr->data));
+
+            if (ptr->right != nullptr) {
+                _dump(ptr->right);
+            }
+        } else {
+            cout << "The BST is empty.";
+        }
+
+        return result;
+    }
+
+    int _h(node* ptr) {
+        if (ptr == nullptr)
+            return 0;
+
+        return 1 + max(_h(ptr->left), _h(ptr->right));
+    }
+
+    void _print(node* ptr, int tabs) {
+        if (ptr == nullptr) {
+            for (int i = -1; i < tabs; ++i) {
+                cout << "\t\t";
+            }
+            cout << "nil\n";
+            return;
+        }
+
+        ++tabs;
+        _print(ptr->right, tabs);
+
+        for (int i = 0; i < tabs; ++i) {
+            cout << "\t\t";
+        }
+        cout << ptr->key << ':' << ptr->data << '\n';
+
+        _print(ptr->left, tabs);
+    }
+
 public:
     bst() {
         root = nullptr;
@@ -198,17 +249,18 @@ public:
         removeSubtree(root);
     }
 
-    node* createLeaf(T& key) {
+    node* createLeaf(T& key, D& data) {
         node* n = new node;
         n->key = key;
+        n->data = data;
         n->left = nullptr;
         n->right = nullptr;
 
         return n;
     }
 
-    void addLeaf(T& key) {
-        _addLeaf(key, root);
+    void addLeaf(T& key, D data) {
+        _addLeaf((int &) key, data, root);
     }
 
     void printInOrder() {
@@ -246,6 +298,39 @@ public:
 
     void removeNode(T key) {
         _removeNode(key, root);
+    }
+
+    vector<pair<T, D>> dump() const {
+        return _dump(root);
+    }
+
+    int h() {
+        return _h(root);
+    }
+
+    int sh() {
+        int h = 0, cur_h = 1;
+        stack<pair<node*, int>> s;
+        node* cur = root;
+
+        while (cur || s.size()) {
+            if (cur != nullptr) {
+                s.push(make_pair(cur, cur_h));
+                cur = cur->left;
+                ++cur_h;
+            } else {
+                cur_h = s.top().second + 1;
+                h = max(h, s.top().second);
+                cur = s.top().first->right;
+                s.pop();
+            }
+        }
+
+        return h;
+    }
+
+    void print() {
+        _print(root, -1);
     }
 
 };
