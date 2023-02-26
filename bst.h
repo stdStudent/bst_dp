@@ -7,6 +7,9 @@
 #include <sstream>
 #include <string>
 #include <optional>
+#include <functional>
+#include <random>
+#include <set>
 
 using namespace std;
 
@@ -190,7 +193,7 @@ private:
                 removeSubtree(ptr->right);
             }
 
-            cout << "Deleted node with key: " << ptr->key << '\n';
+            //cout << "Deleted node with key: " << ptr->key << '\n';
             delete ptr;
         }
     }
@@ -413,24 +416,73 @@ public:
     }
 
     friend ostream &operator<<(ostream &ostream, const bst& tree) {
-        int h = 0, cur_h = 1;
+        int cur_h = 0;
         stack<pair<node*, int>> s;
         node* cur = tree.root;
 
-        while (cur || s.size()) {
+        while (cur || !s.empty()) {
+            for (int i = 0; i < cur_h; ++i) {
+                cout << (i == 0 ? "│" : "\t\t│"); // for root
+            }
+
             if (cur != nullptr) {
+                cout << (cur == tree.root ? "" : "├───── ") << cur->key << ':' << cur->data << '\n';
                 s.push(make_pair(cur, cur_h));
                 cur = cur->left;
                 ++cur_h;
             } else {
+                cout << "├───── nil" << '\n';
                 cur_h = s.top().second + 1;
-                h = max(h, s.top().second);
                 cur = s.top().first->right;
                 s.pop();
             }
         }
 
         return ostream;
+    }
+
+    void visitor(function<void(const T&, const D&)> worker) const {
+        if (root == nullptr)
+            return;
+
+        stack<node*> s;
+        node* cur = root;
+
+        while (cur || s.size()) {
+            if (cur != nullptr) {
+                s.push(cur);
+                cur = cur->left;
+            } else {
+                cur = s.top()->right;
+                worker(s.top()->key, s.top()->data);
+                s.pop();
+            }
+        }
+    }
+
+    vector<pair<T, D>> dumpv() const {
+        vector <pair<T, D>> result;
+        visitor([&](auto key, auto data){
+            result.push_back(make_pair(key, data));
+        });
+        return result;
+    }
+
+    void generate(const int numOfElems) {
+        std::random_device rd;
+        std::mt19937 g(rd());
+
+        set<T> randomKeys;
+        while (randomKeys.size() != numOfElems) {
+            randomKeys.insert(g());
+        }
+
+        vector<T> randomKeysOrder(randomKeys.begin(), randomKeys.end());
+        std::shuffle(randomKeysOrder.begin(), randomKeysOrder.end(), g);
+
+        for (const auto &item: randomKeysOrder) {
+            insert(item, D());
+        }
     }
 
 };
