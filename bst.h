@@ -265,16 +265,16 @@ private:
             return 1;
 
         int l = INT_MAX, r = INT_MAX;
-        // If left subtree is not NULL, recur for left subtree
 
+        // If left subtree is not empty, recur for left subtree
         if (cur->left)
             l = _mh(cur->left);
 
-        // If right subtree is not NULL, recur for right subtree
+        // If right subtree is not empty, recur for right subtree
         if (cur->right)
             r =  _mh(cur->right);
 
-        //height will be minimum of left and right height +1
+        // Height will be minimum of left and right height +1
         return min(l , r) + 1;
     }
 
