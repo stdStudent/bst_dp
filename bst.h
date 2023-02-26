@@ -415,28 +415,45 @@ public:
         return nullopt;
     }
 
-    friend ostream &operator<<(ostream &ostream, const bst& tree) {
+    friend std::ostream &operator<<(std::ostream & ostream, const bst& tree) {
+        std::vector<bool> pathesVisited;
+        node *current = tree.root;
+        bool toRightLeaf = false;
         int cur_h = 0;
-        stack<pair<node*, int>> s;
-        node* cur = tree.root;
+        std::stack<std::pair<node*, int>> s;
+        s.push(make_pair(nullptr, 0));
 
-        while (cur || !s.empty()) {
-            for (int i = 0; i < cur_h; ++i) {
-                cout << (i == 0 ? "│" : "\t\t│"); // for root
+        do {
+            /*std::for_each(pathesVisited.begin(), pathesVisited.end(),
+                          [&](bool v) { ostream << (v ? "\t│" : "\t"); });*/
+            for (int i = 0; i < pathesVisited.size(); ++i) {
+                if (i == 0)
+                    ostream << (pathesVisited[i] ? "│" : ""); // for root
+                else
+                    ostream << (pathesVisited[i] ? "\t│" : "\t");
             }
 
-            if (cur != nullptr) {
-                cout << (cur == tree.root ? "" : "├───── ") << cur->key << ':' << cur->data << '\n';
-                s.push(make_pair(cur, cur_h));
-                cur = cur->left;
+            if (toRightLeaf and cur_h == pathesVisited.size())
+                pathesVisited[cur_h - 1] = false;
+
+            toRightLeaf = false;
+            if (current != nullptr) {
+                ostream << (current == tree.root ? "" : "├─ ") << current->key << ':' << current->data << '\n';
+                s.push({current->right, cur_h + 1});
+                current = current->left;
                 ++cur_h;
+                pathesVisited.push_back(true);
             } else {
-                cout << "├───── nil" << '\n';
-                cur_h = s.top().second + 1;
-                cur = s.top().first->right;
+                ostream << "├─ nil" << std::endl;
+                current = s.top().first;
+                cur_h = s.top().second;
                 s.pop();
+                toRightLeaf = true;
+                while (cur_h < pathesVisited.size()) {
+                    pathesVisited.pop_back();
+                }
             }
-        }
+        } while (current || !s.empty());
 
         return ostream;
     }
