@@ -10,10 +10,11 @@ int main() {
     myTree.printInOrder();
     for (int & TreeKey : TreeKeys) {
         cout << myTree.sh() << ' ' << myTree.h() << '\n';
-        myTree.addLeaf(TreeKey, 0);
+        myTree.insert(TreeKey, 0);
     }
 
     myTree.print();
+    //cout << myTree.find(4).key;
 
     myTree.printInOrder();
     myTree.printChildren(4);
@@ -25,7 +26,9 @@ int main() {
         cout << item.first << ':' << item.second << ' ';
     }
 
-    myTree.removeNode(56);
+    cout << '\n';
+
+    myTree.remove(52);
     myTree.printInOrder();
 
     return 0;

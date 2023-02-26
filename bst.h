@@ -6,6 +6,7 @@
 #include <stack>
 #include <sstream>
 #include <string>
+#include <optional>
 
 using namespace std;
 
@@ -20,6 +21,7 @@ private:
     };
 
     node* root;
+    size_t size;
 
     void _addLeaf(T& key, D& data, node* ptr) {
         if (root == nullptr) {
@@ -240,10 +242,16 @@ private:
         _print(ptr->left, tabs);
     }
 
-public:
-    bst() {
-        root = nullptr;
+    node** _find(const T& key) const {
+        node** current = (node**)(&root);
+        while (*current && (*current)->key != key) {
+            current = (*current)->key < key ? &((*current)->right) : &((*current)->left);
+        }
+        return current;
     }
+
+public:
+    bst() : root(nullptr), size(0) {}
 
     ~bst() {
         removeSubtree(root);
@@ -308,7 +316,7 @@ public:
         return _h(root);
     }
 
-    int sh() {
+    size_t sh() const {
         int h = 0, cur_h = 1;
         stack<pair<node*, int>> s;
         node* cur = root;
@@ -331,6 +339,98 @@ public:
 
     void print() {
         _print(root, -1);
+    }
+
+    optional<reference_wrapper<D>> find(const T& key) {
+        auto node = _find(key);
+        if (*node == nullptr) {
+            return nullopt;
+        }
+        return (*node)->data;
+    }
+
+    bool insert(const T& key, const D& data) {
+        node** n = _find(key);
+        if (*n != nullptr) {
+            (*n)->data = data;
+        } else {
+            *n = new node{key, data};
+            ++size;
+            return true;
+        }
+        return false;
+    }
+
+    bool remove(const T& key) {
+        node** n = _find(key);
+        if (*n == nullptr) {
+            return false;
+        }
+
+        if ((*n)->left == nullptr) {
+            node* tmp = *n;
+            *n = tmp->right;
+            delete tmp;
+        } else if ((*n)->right == nullptr) {
+            node* tmp = *n;
+            *n = tmp->left;
+            delete tmp;
+        } else {
+            node** tmp = &(*n)->right;
+            while (*tmp != nullptr) {
+                tmp = &(*tmp)->left;
+            }
+            (*n)->data = (*tmp)->data;
+            (*n)->key = (*tmp)->key;
+            node* delPtr = *tmp;
+            *tmp = delPtr->right;
+        }
+        --size;
+        return true;
+    }
+
+    optional<T> find_next(const T& key) const {
+        node** current = (node**)(&root);
+        node** lastLeft = nullptr;
+        while (*current && (*current)->key != key) {
+                                                                     // must be the same type for ','
+            current = (*current)->key < key ? &((*current)->right) : (lastLeft = current, &((*current)->left));
+        }
+
+        if (*current == nullptr || (*current)->right == nullptr) {
+            if (lastLeft == nullptr)
+                return nullopt;
+            else
+                return (*lastLeft)->key;
+        } else {
+            current = &(*current)->right;
+            while ((*current)->left != nullptr) {
+                current = &(*current)->left;
+            }
+            return (*current)->key;
+        }
+        return nullopt;
+    }
+
+    friend ostream &operator<<(ostream &ostream, const bst& tree) {
+        int h = 0, cur_h = 1;
+        stack<pair<node*, int>> s;
+        node* cur = tree.root;
+
+        while (cur || s.size()) {
+            if (cur != nullptr) {
+                s.push(make_pair(cur, cur_h));
+                cur = cur->left;
+                ++cur_h;
+            } else {
+                cur_h = s.top().second + 1;
+                h = max(h, s.top().second);
+                cur = s.top().first->right;
+                s.pop();
+            }
+        }
+
+        return ostream;
     }
 
 };
