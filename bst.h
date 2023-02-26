@@ -10,6 +10,7 @@
 #include <functional>
 #include <random>
 #include <set>
+#include <climits>
 
 using namespace std;
 
@@ -253,6 +254,31 @@ private:
         return current;
     }
 
+    int _mh(node *cur)
+    {
+        // Corner case. Should never be hit unless the code is
+        // called on root = NULL
+        if (cur == NULL)
+            return 0;
+
+        // Base case : Leaf Node. This accounts for height = 1.
+        if (cur->left == NULL && cur->right == NULL)
+            return 1;
+
+        int l = INT_MAX, r = INT_MAX;
+        // If left subtree is not NULL, recur for left subtree
+
+        if (cur->left)
+            l = _mh(cur->left);
+
+        // If right subtree is not NULL, recur for right subtree
+        if (cur->right)
+            r =  _mh(cur->right);
+
+        //height will be minimum of left and right height +1
+        return min(l , r) + 1;
+    }
+
 public:
     bst() : root(nullptr), size(0) {}
 
@@ -338,6 +364,10 @@ public:
         }
 
         return h;
+    }
+
+    int mh() {
+        return _mh(root);
     }
 
     void print() {

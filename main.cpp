@@ -9,36 +9,31 @@ void print(const T& key, const D& data) {
 int main() {
     int TreeKeys[16] = {50, 76, 21, 4, 32, 64, 15, 52, 14, 100, 83, 2, 3, 70, 87, 80};
     bst<int, int> myTree;
-//    myTree.generate(256);
-//    cout << myTree.sh();
-
-    //cout << myTree.findSmallest();
-
-    //myTree.printInOrder();
     for (int & TreeKey : TreeKeys) {
-        cout << myTree.sh() << ' ' << myTree.h() << '\n';
         myTree.insert(TreeKey, 0);
     }
 
-    /*myTree.print();
-    //cout << myTree.find(4).key;
 
-    myTree.printInOrder();
-    myTree.printChildren(4);
-    myTree.printChildren(83);
-    cout << myTree.findSmallest() << '\n';*/
+    cout << "\n\ndumpv() test:\n";
+    auto v = myTree.dumpv();
+    for (const auto &item: v) {
+        cout << item.first << ':' << item.second << ' ';
+    }
 
-//    auto v = myTree.dumpv();
-//    for (const auto &item: v) {
-//        cout << item.first << ':' << item.second << ' ';
-//    }
-//
-//    cout << '\n';
 
-    /*myTree.remove(52);
-    myTree.printInOrder();*/
-//    myTree.visitor(print<int, int>); cout << '\n';
+    cout << "\n\nvisitor() test:\n";
+    myTree.visitor(print<int, int>); cout << '\n';
+
+
+    cout << "\n\noutput test:\n";
     std::cout << myTree;
+
+
+    cout << "\n\ngenerate() test:\n";
+    bst<int, string> test;
+    test.generate(256);
+    cout << (float)((test.h() + test.mh()) / 2);
+
 
     return 0;
 }
