@@ -43,5 +43,17 @@ int main() {
     cout << static_cast<float>((test.h() + test.mh()) / 2);
 
 
+    cout << "\n\ntest wrong_keys():\n";
+    int toCorruptTreeKeys[5] = {6, 2, 7, 1, 3};
+    bst<int, int> corTree;
+    for (int & toCorruptTreeKey : toCorruptTreeKeys) {
+        corTree.insert(toCorruptTreeKey, 0);
+    }
+    cout << corTree << '\n';
+    corTree.print_wrong_keys();
+    corTree.replace_node_manually(2, 4);
+    cout << '\n' << corTree << '\n';
+    corTree.print_wrong_keys();
+
     return 0;
 }

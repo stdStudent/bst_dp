@@ -256,13 +256,12 @@ private:
 
     int _mh(node *cur)
     {
-        // Corner case. Should never be hit unless the code is
-        // called on root = NULL
-        if (cur == NULL)
+        // Corner case. Should never be hit unless the code is called on root = nullptr
+        if (cur == nullptr)
             return 0;
 
         // Base case : Leaf Node. This accounts for height = 1.
-        if (cur->left == NULL && cur->right == NULL)
+        if (cur->left == nullptr && cur->right == nullptr)
             return 1;
 
         int l = INT_MAX, r = INT_MAX;
@@ -556,40 +555,77 @@ public:
         node* cur = root;
         node* prev = nullptr;
 
-        // Traverse the binary tree
         while (cur || !Stack.empty()) {
-
             // Traverse left subtree
-            while (cur != NULL) {
-
-                // Insert root into Stack
+            while (cur) {
                 Stack.push(cur);
-
-                // Update root
                 cur = cur->left;
             }
 
-            // Stores top element of Stack
             cur = Stack.top();
-
-            // Remove the top element of Stack
             Stack.pop();
 
             // If data value of root node less
             // than data value of left subtree
-            if(prev && cur->data <= prev->data) {
+            if (prev && cur->data <= prev->data) {
                 return false;
             }
 
-            // Update prev
-            prev = cur;
-
-            // Traverse right subtree
-            // of the tree
-            cur = cur->right;
+            prev = cur;       // update prev
+            cur = cur->right; // traverse right subtree
         }
 
         return true;
+    }
+
+    optional<pair<node*, node*>> wrong_keys() {
+        stack<node*> Stack;
+        node* cur = root;
+        node* prev = nullptr;
+
+        while (cur || !Stack.empty()) {
+            // Traverse left subtree
+            while (cur) {
+                Stack.push(cur);
+                cur = cur->left;
+            }
+
+            cur = Stack.top();
+            Stack.pop();
+
+            // If data value of root node less
+            // than data value of left subtree
+            if(prev && cur->key <= prev->key) {
+                return make_pair(prev, cur);
+            }
+
+            prev = cur;       // update prev
+            cur = cur->right; // traverse right subtree
+        }
+
+        return nullopt;
+    }
+
+    void print_wrong_keys() {
+        auto result = wrong_keys();
+        if (result == nullopt)
+            cout << "Correct tree.\n";
+        else
+            cout << "Possible wrong keys: "
+                 << result.value().first->key  << ':' << result.value().first->data
+                 << ", "
+                 << result.value().second->key << ':' << result.value().second->data;
+    }
+
+    void replace_node_manually(const T& key, const T& new_key, const D& new_data) {
+        auto toReplace = _find(key);
+        (*toReplace)->key = new_key;
+        (*toReplace)->data = new_data;
+    }
+
+    void replace_node_manually(const T& key, const T& new_key) {
+        auto toReplace = _find(key);
+        (*toReplace)->key = new_key;
     }
 
 };
