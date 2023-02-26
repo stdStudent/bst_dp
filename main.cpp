@@ -29,10 +29,18 @@ int main() {
     std::cout << myTree;
 
 
+    cout << "\n\nbst by data test:\n";
+    bst<int, int> dataTree;
+    for (int & TreeKey : TreeKeys) {
+        dataTree.insert(TreeKey, TreeKey);
+    }
+    std::cout << "rec: " << dataTree.is_bst_by_secondary_key() << ", stack: " << dataTree.s_is_bst_by_secondary_key();
+
+
     cout << "\n\ngenerate() test:\n";
     bst<int, string> test;
     test.generate(256);
-    cout << (float)((test.h() + test.mh()) / 2);
+    cout << static_cast<float>((test.h() + test.mh()) / 2);
 
 
     return 0;

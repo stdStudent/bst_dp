@@ -279,6 +279,23 @@ private:
         return min(l , r) + 1;
     }
 
+    bool _is_bst_by_secondary_key(node* node, int min, int max)
+    {
+        /* an empty tree is BST */
+        if (node == nullptr)
+            return true;
+
+        /* false if this node violates
+        the min/max constraint */
+        if (node->data < min || node->data > max)
+            return false;
+
+        /* otherwise check the subtrees recursively,
+        tightening the min or max constraint */
+        return    _is_bst_by_secondary_key(node->left, min, node->data - 1)
+               && _is_bst_by_secondary_key(node->right, node->data + 1, max);
+    }
+
 public:
     bst() : root(nullptr), size(0) {}
 
@@ -454,8 +471,6 @@ public:
         s.push(make_pair(nullptr, 0));
 
         do {
-            /*std::for_each(pathesVisited.begin(), pathesVisited.end(),
-                          [&](bool v) { ostream << (v ? "\t│" : "\t"); });*/
             for (int i = 0; i < pathesVisited.size(); ++i) {
                 if (i == 0)
                     ostream << (pathesVisited[i] ? "│" : ""); // for root
@@ -530,6 +545,51 @@ public:
         for (const auto &item: randomKeysOrder) {
             insert(item, D());
         }
+    }
+
+    bool is_bst_by_secondary_key() {
+        return _is_bst_by_secondary_key(root, INT_MIN, INT_MAX);
+    }
+
+    bool s_is_bst_by_secondary_key() {
+        stack<node*> Stack;
+        node* cur = root;
+        node* prev = nullptr;
+
+        // Traverse the binary tree
+        while (cur || !Stack.empty()) {
+
+            // Traverse left subtree
+            while (cur != NULL) {
+
+                // Insert root into Stack
+                Stack.push(cur);
+
+                // Update root
+                cur = cur->left;
+            }
+
+            // Stores top element of Stack
+            cur = Stack.top();
+
+            // Remove the top element of Stack
+            Stack.pop();
+
+            // If data value of root node less
+            // than data value of left subtree
+            if(prev && cur->data <= prev->data) {
+                return false;
+            }
+
+            // Update prev
+            prev = cur;
+
+            // Traverse right subtree
+            // of the tree
+            cur = cur->right;
+        }
+
+        return true;
     }
 
 };
