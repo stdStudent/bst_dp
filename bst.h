@@ -482,13 +482,13 @@ public:
 
             toRightLeaf = false;
             if (current != nullptr) {
-                ostream << (current == tree.root ? "" : "├─ ") << current->key << ':' << current->data << '\n';
+                ostream << (current == tree.root ? "" : "── ") << current->key << ':' << current->data << '\n';
                 s.push({current->right, cur_h + 1});
                 current = current->left;
                 ++cur_h;
                 pathesVisited.push_back(true);
             } else {
-                ostream << "├─ nil" << std::endl;
+                ostream << "── nil" << std::endl;
                 current = s.top().first;
                 cur_h = s.top().second;
                 s.pop();
@@ -523,7 +523,7 @@ public:
 
     vector<pair<T, D>> dumpv() const {
         vector <pair<T, D>> result;
-        visitor([&](auto key, auto data){
+        visitor([&result](auto key, auto data){
             result.push_back(make_pair(key, data));
         });
         return result;
@@ -538,6 +538,7 @@ public:
             randomKeys.insert(g());
         }
 
+        // Use std::unique, as set is slow
         vector<T> randomKeysOrder(randomKeys.begin(), randomKeys.end());
         std::shuffle(randomKeysOrder.begin(), randomKeysOrder.end(), g);
 
