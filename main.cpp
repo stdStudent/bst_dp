@@ -31,9 +31,11 @@ int main() {
     cout << "\n\nbst by data test:\n";
     bst<int, int> dataTree;
     for (int & TreeKey : TreeKeys) {
-        dataTree.insert(TreeKey, 0);
+        dataTree.insert(TreeKey, TreeKey);
     }
-    std::cout << "rec: " << dataTree.is_bst_by_secondary_key() << ", stack: " << dataTree.s_is_bst_by_secondary_key();
+    std::cout << "rec: " << dataTree.is_bst_by_secondary_key()
+              << ", stack: " << dataTree.s_is_bst_by_secondary_key()
+              << ", visit: " << dataTree.visit_is_bst_by_secondary_key();
 
 
     cout << "\n\ngenerate() test:\n";

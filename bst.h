@@ -579,6 +579,19 @@ public:
         return true;
     }
 
+    bool visit_is_bst_by_secondary_key() {
+        optional<D> lastData = nullopt;
+        bool result = true;
+        visitor([&lastData, &result](auto key, auto data){
+            if (lastData && lastData.value() >= data) {
+                result = false;
+
+            }
+            lastData = data;
+        });
+        return result;
+    }
+
     optional<pair<node*, node*>> wrong_keys() {
         stack<node*> Stack;
         node* cur = root;
@@ -606,6 +619,22 @@ public:
 
         return nullopt;
     }
+
+    /*optional<pair<node*, node*>> visit_wrong_keys() {
+        optional<node**> prev = nullopt;
+        optional<node**> cur = nullopt;
+        optional<pair<node*, node*>> result = nullopt;
+        visitor([&prev, &cur, &result, this](auto key, auto data){
+            prev = _find(key);
+            auto curKey = find_next(key);
+            cur = _find(curKey.value());
+
+            if (*prev && (*cur.value())->key <= (*prev.value())->key) {
+                result = make_pair((*prev.value()), (*cur.value()));
+            }
+        });
+        return result;
+    }*/
 
     void print_wrong_keys() {
         auto result = wrong_keys();
