@@ -14,6 +14,11 @@
 
 using namespace std;
 
+enum colour {
+    red,
+    black
+};
+
 template <class T, class D>
 class bst {
 private:
@@ -295,8 +300,96 @@ private:
                && _is_bst_by_secondary_key(node->right, node->data + 1, max);
     }
 
+    int _blackHeightByDataNoValidation(node* ptr) {
+        if (ptr == nullptr)
+            return 0;
+
+        auto currNode = ptr;
+
+        int leftHeight = _blackHeightByDataNoValidation(currNode->left);
+        int rightHeight = _blackHeightByDataNoValidation(currNode->right);
+        int add = currNode->data == black ? 1 : 0;
+
+        return max(leftHeight, rightHeight) + add;
+    }
+
+    int _blackHeightByDataValidation(node* currNode) {
+        if (currNode == NULL)
+            return 0;
+
+        int leftHeight = _blackHeightByDataValidation(currNode->left);
+        int rightHeight = _blackHeightByDataValidation(currNode->right);
+        int add = currNode->data == black ? 1 : 0;
+
+        // The current subtree is not a red black tree if and only if
+        // one or more of current node's children is a root of an invalid tree
+        // or they contain different number of black nodes on a path to a null node.
+        if (leftHeight == -1 || rightHeight == -1 || leftHeight != rightHeight)
+            return -1;
+        else
+            //return leftHeight + add;
+            return max(leftHeight, rightHeight) + add;
+    }
+
+    bool checkRedPoperty(node* ptr) {
+        auto currNode = ptr;
+
+        if (currNode == nullptr)
+            return true;
+
+        if (currNode->data == red && (currNode->left == nullptr || currNode->right == nullptr))
+            return false;
+
+        if (currNode->data == red && (currNode->left->data != black || currNode->right->data != black))
+            return false;
+
+        return checkRedPoperty(currNode->left) && checkRedPoperty(currNode->right);
+    }
+
 public:
     bst() : root(nullptr), size(0) {}
+
+    bst(bst const& other) : root(nullptr), size(0) {
+        std::vector<node const*> remaining;
+        node const* cur = other.root;
+
+        while (cur) {
+            insert(cur->key, cur->data);
+            if (cur->right) {
+                remaining.push_back(cur->right);
+            }
+
+            if (cur->left) {
+                cur = cur->left;
+            } else if (remaining.empty()) {
+                break;
+            } else {
+                cur = remaining.back();
+                remaining.pop_back();
+            }
+        }
+    }
+
+    void traverse(node *c) {
+        if (c != nullptr) {
+            this->insert(c->key, c->data);
+            traverse(c->left);
+            traverse(c->right);
+        }
+    }
+
+    bst& operator=(const bst& that) {
+        if (this != &that) {
+            node *c = that.root;
+            traverse(c);
+        }
+
+        return *this;
+    }
+
+    bst& assign(const bst& that) {
+        return this->operator=(that);
+    }
 
     ~bst() {
         removeSubtree(root);
@@ -658,6 +751,22 @@ public:
         (*toReplace)->key = new_key;
     }
 
+    int blackHeightByData() {
+        return _blackHeightByDataNoValidation(root);
+    }
+
+    bool isRBT_byData() {
+        if (root->data != black)
+            return false;
+
+        if (!checkRedPoperty(root))
+            return false;
+
+        if (_blackHeightByDataValidation(root) == -1)
+            return false;
+
+        return true;
+    }
 };
 
 #endif //BST_DP_BST_H
