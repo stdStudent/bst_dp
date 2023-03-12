@@ -378,10 +378,19 @@ public:
         }
     }
 
-    bst& operator=(const bst& that) {
-        if (this != &that) {
-            node *c = that.root;
-            traverse(c);
+//    bst& operator=(const bst& that) {
+//        if (this != &that) {
+//            node *c = that.root;
+//            traverse(c);
+//        }
+//
+//        return *this;
+//    }
+
+    bst& operator=(const bst &src) {
+        if (&src != this) {  // check for self assignment
+            bst temp(src);
+            std::swap(temp.root, root);
         }
 
         return *this;

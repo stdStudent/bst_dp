@@ -21,6 +21,11 @@ int main() {
 
     cout << myTree;
 
+    cout << '\n';
+    bst<int, colour> newTree = myTree;
+    //bst<int, colour> newTree = myTree.assign(newTree);
+    cout << newTree << '\n';
+
     cout << "Test black height:\n";
     cout << myTree.blackHeight() << '\n';
     cout << (myTree.isRBT_byData() ? "true" : "false") << '\n';
@@ -32,12 +37,6 @@ int main() {
     cout << myTree;
     myTree.rotateLeft(myTree.getNodePtrPtr(21));
     cout << myTree;
-
-
-//    cout << '\n';
-//    bst<int, colour> newTree = myTree;
-//    //bst<int, colour> newTree = myTree.assign(newTree);
-//    cout << newTree;
 
 
 //    for (int & TreeKey : TreeKeys) {
