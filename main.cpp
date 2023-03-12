@@ -22,13 +22,22 @@ int main() {
     cout << myTree;
 
     cout << "Test black height:\n";
-    cout << myTree.blackHeightByData() << '\n';
-    cout << (myTree.isRBT_byData() ? "true" : "false");
+    cout << myTree.blackHeight() << '\n';
+    cout << (myTree.isRBT_byData() ? "true" : "false") << '\n';
+    cout << (myTree.isRBT() ? "true" : "false") << '\n';
+    cout << myTree.isRedProperty();
 
-    cout << '\n';
-    bst<int, colour> newTree = myTree;
-    //bst<int, colour> newTree = myTree.assign(newTree);
-    cout << newTree;
+    cout << "\n\n";
+    myTree.rotateRight(myTree.getNodePtrPtr(21));
+    cout << myTree;
+    myTree.rotateLeft(myTree.getNodePtrPtr(21));
+    cout << myTree;
+
+
+//    cout << '\n';
+//    bst<int, colour> newTree = myTree;
+//    //bst<int, colour> newTree = myTree.assign(newTree);
+//    cout << newTree;
 
 
 //    for (int & TreeKey : TreeKeys) {

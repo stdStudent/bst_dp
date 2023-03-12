@@ -314,7 +314,7 @@ private:
     }
 
     int _blackHeightByDataValidation(node* currNode) {
-        if (currNode == NULL)
+        if (currNode == nullptr)
             return 0;
 
         int leftHeight = _blackHeightByDataValidation(currNode->left);
@@ -755,17 +755,119 @@ public:
         return _blackHeightByDataNoValidation(root);
     }
 
+    int blackHeight() {
+        node* cur = root;
+        int h = 0;
+
+        while (cur != nullptr) {
+            if (cur->data == colour::black) {
+                ++h;
+            }
+            cur = cur->left;
+        }
+
+        return h;
+    }
+
+    bool isRedProperty() {
+        if (root == nullptr)
+            return false;
+
+        stack<node*> s;
+        node* cur = root;
+
+        while (cur || s.size()) {
+            if (cur != nullptr) {
+                s.push(cur);
+                cur = cur->left;
+            } else {
+                cur = s.top()->right;
+                if (s.top()->data == red)
+                    if (s.top()->right->data != black || s.top()->left->data != black)
+                        return false;
+                s.pop();
+            }
+        }
+
+        return true;
+    }
+
     bool isRBT_byData() {
         if (root->data != black)
             return false;
 
-        if (!checkRedPoperty(root))
+        if (!isRedProperty())
             return false;
 
         if (_blackHeightByDataValidation(root) == -1)
             return false;
 
         return true;
+    }
+
+    bool isRBT() {
+        if (root == nullptr)
+            return true;
+
+        stack<node*> s;
+        node* cur = root;
+        int hl = 0, hr = 0;
+
+        while (cur || s.size()) {
+            if (cur != nullptr) {
+                s.push(cur);
+                if (cur != nullptr && cur->data == colour::black) { ++hl; }
+                cur = cur->left;
+            } else {
+                cur = s.top()->right;
+                if (cur != nullptr && cur->data == colour::black) { ++hr; --hl; }
+
+                // check red property
+                if (s.top()->data == red)
+                    if (s.top()->right->data != black || s.top()->left->data != black)
+                        return false;
+
+                s.pop();
+            }
+        }
+
+        if (hl != hr)
+            return false;
+
+        return true;
+    }
+
+    node** getNodePtrPtr(const T& key) {
+        return _find(key);
+    }
+
+
+    void rotateRight(node** N) {
+        /*
+         *     N                 K
+         *    / \               / \
+         *   (a)  K     =>     N  (c)
+         *       / \          / \
+         *     (b) (c)      (a) (b)
+         */
+        node *K = (*N)->right;
+        (*N)->right = K->left;
+        K->left = *N;
+        *N = K;
+    }
+
+    void rotateLeft(node** N) {
+        /*
+         *        N                K
+         *       / \              / \
+         *      K  (a)    =>    (b)  N
+         *     / \                  / \
+         *   (b) (c)              (c) (a)
+         */
+        node* K = (*N)->left;
+        (*N)->left = K->right;
+        K->right = *N;
+        *N = K;
     }
 };
 
