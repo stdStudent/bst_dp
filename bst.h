@@ -814,35 +814,39 @@ public:
         return true;
     }
 
+    bool checkRedNode(node* cur) {
+        if (cur->data == colour::red)
+            return cur->left->data == colour::black && cur->right->data == colour::black;
+
+        return true;
+    }
+
     bool isRBT() {
         if (root == nullptr)
             return true;
 
-        stack<node*> s;
+        int black_h = blackHeight(), cur_h = 0;
+        stack<pair<node*, int>> s;
         node* cur = root;
-        int hl = 0, hr = 0;
 
         while (cur || s.size()) {
             if (cur != nullptr) {
-                s.push(cur);
-                if (cur != nullptr && cur->data == colour::black) { ++hl; }
+                if (cur->data == colour::black)
+                    ++cur_h;
+                s.push(make_pair(cur, cur_h));
                 cur = cur->left;
-            } else {
-                cur = s.top()->right;
-                if (cur != nullptr && cur->data == colour::black) { ++hr; --hl; }
+            }
+            else {
+                if (!checkRedNode(s.top().first))
+                    return false;
 
-                // check red property
-                if (s.top()->data == red)
-                    if (s.top()->right->data != black || s.top()->left->data != black)
-                        return false;
-
+                if (black_h != cur_h)
+                    return false;
+                cur_h = s.top().second;
+                cur = s.top().first->right;
                 s.pop();
             }
         }
-
-        if (hl != hr)
-            return false;
-
         return true;
     }
 
@@ -859,7 +863,7 @@ public:
          *       / \          / \
          *     (b) (c)      (a) (b)
          */
-        node *K = (*N)->right;
+        node* K = (*N)->right;
         (*N)->right = K->left;
         K->left = *N;
         *N = K;
