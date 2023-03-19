@@ -204,6 +204,22 @@ private:
         }
     }
 
+    void delete_tree() {
+        stack<node*> s;
+        node* cur = root;
+
+        while (cur || s.size()) {
+            if (cur) {
+                s.push(cur);
+                cur = cur->left;
+            } else {
+                cur = s.top()->right;
+                delete s.top();
+                s.pop();
+            }
+        }
+    }
+
     vector<pair<T, D>> _dump(node* ptr) const {
         vector<pair<T, D>> result;
 
@@ -396,9 +412,36 @@ public:
         return *this;
     }
 
-    bst& assign(const bst& that) {
-        return this->operator=(that);
+    bst& assign(const bst& src) {
+        if (this == &src)
+            return *this;
+        delete_tree();
+
+        stack<pair<node**, node*>> s;
+        node* src_cur = src.root;
+        node** cur = &root;
+
+        while (src_cur || s.size()) {
+            if (src_cur) {
+                *cur = new node(src_cur->key, src_cur->data, nullptr, nullptr);
+                s.push(make_pair(cur, src_cur));
+                src_cur = src_cur->left;
+                cur = &(*cur)->left;
+            } else {
+                src_cur = s.top().second->right;
+                cur = &((*s.top().first)->right);
+                //delete s.top();
+                s.pop();
+
+            }
+        }
+
+        return *this;
     }
+
+//    bool operator==(const bst& tree) {
+//
+//    }
 
     ~bst() {
         removeSubtree(root);
