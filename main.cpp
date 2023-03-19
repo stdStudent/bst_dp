@@ -25,18 +25,26 @@ int main() {
     bst<int, colour> newTree = myTree;
     //bst<int, colour> newTree = myTree.assign(newTree);
     cout << newTree << '\n';
+    cout << "operator==(): " << (myTree == newTree ? "true" : "false") << '\n';
 
-    cout << "Test black height:\n";
-    cout << myTree.blackHeight() << '\n';
-    cout << (myTree.isRBT_byData() ? "true" : "false") << '\n';
-    cout << (myTree.isRBT() ? "true" : "false") << '\n';
-    cout << myTree.isRedProperty();
+//    cout << "Test black height:\n";
+//    cout << myTree.blackHeight() << '\n';
+//    cout << (myTree.isRBT_byData() ? "true" : "false") << '\n';
+//    cout << (myTree.isRBT() ? "true" : "false") << '\n';
+//    cout << myTree.isRedProperty();
 
     cout << "\n\n";
     myTree.rotateRight(myTree.getNodePtrPtr(21));
     cout << myTree;
     myTree.rotateLeft(myTree.getNodePtrPtr(21));
     cout << myTree;
+
+    cout << "same_content(): " << (myTree.same_content(newTree) ? "true" : "false") << '\n';
+    cout << "operator==(): " << (myTree == newTree ? "true" : "false") << '\n';
+    newTree.insert(15, r);
+    cout << "same_content(): " << (myTree.same_content(newTree) ? "true" : "false") << '\n';
+    myTree.insert(15, r);
+    cout << "same_content(): " << (myTree.same_content(newTree) ? "true" : "false") << '\n';
 
 
 //    for (int & TreeKey : TreeKeys) {

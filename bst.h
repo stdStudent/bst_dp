@@ -439,9 +439,47 @@ public:
         return *this;
     }
 
-//    bool operator==(const bst& tree) {
-//
-//    }
+    bool same_content(const bst& another) {
+        auto orig = this->dumpv();
+        auto other = another.dumpv();
+
+        return orig == other;
+    }
+
+    bool operator==(const bst& another) const {
+        if (this->root == nullptr && another.root == nullptr)
+            return true;
+        else if (this->root == nullptr || another.root == nullptr)
+            return false;
+
+        stack<pair<node*, node*>> stack;
+        stack.push(make_pair(this->root, another.root));
+
+        while (!stack.empty()) {
+            node* x = stack.top().first;
+            node* y = stack.top().second;
+            stack.pop();
+
+            if (x->key != y->key || x->data != y->data)
+                return false;
+
+            // If the left subtree of both subtrees exists, push their addresses to stack.
+            // Otherwise, return false if only one left child exists
+            if (x->left && y->left)
+                stack.push({x->left, y->left});
+            else if (x->left || y->left)
+                return false;
+
+            // If the right subtree of both trees exists, push their addresses to stack.
+            // Otherwise, return false if only one right child exists.
+            if (x->right && y->right)
+                stack.push({x->right, y->right});
+            else if (x->right || y->right)
+                return false;
+        }
+
+        return true;
+    }
 
     ~bst() {
         removeSubtree(root);
