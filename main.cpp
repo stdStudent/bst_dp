@@ -36,8 +36,13 @@ int main() {
     cout << "\n\n";
     myTree.rotateRight(myTree.getNodePtrPtr(21));
     cout << myTree;
+
+    cout << "findDifferingNode: " << myTree.findDifferingNode(newTree)->key << '\n';
+    cout << myTree.rotationDistance(newTree) << '\n';
+
     myTree.rotateLeft(myTree.getNodePtrPtr(21));
     cout << myTree;
+    cout << myTree.rotationDistance(newTree) << '\n';
 
     cout << "same_content(): " << (myTree.same_content(newTree) ? "true" : "false") << '\n';
     cout << "operator==(): " << (myTree == newTree ? "true" : "false") << '\n';

@@ -11,6 +11,10 @@
 #include <random>
 #include <set>
 #include <climits>
+#include <unordered_set>
+#include <unordered_map>
+#include <queue>
+#include <cstdlib>
 
 using namespace std;
 
@@ -440,10 +444,38 @@ public:
     }
 
     bool same_content(const bst& another) {
-        auto orig = this->dumpv();
-        auto other = another.dumpv();
+        /* Idk, maybe it's better to just use the commented code below,
+         * but I'm just having fun.
+         */
+//        auto orig = this->dumpv();
+//        auto other = another.dumpv();
+//        return orig == other;
 
-        return orig == other;
+        auto root1 = this->root;
+        auto root2 = another.root;
+        priority_queue<D> pq1, pq2;
+
+        function<void(node*, priority_queue<D>&)> traverse = [&](node* node, priority_queue<D>& pq) {
+            if (node == nullptr)
+                return;
+
+            pq.push(node->data);
+            traverse(node->left, pq);
+            traverse(node->right, pq);
+        };
+
+        traverse(root1, pq1);
+        traverse(root2, pq2);
+
+        while (!pq1.empty() && !pq2.empty()) {
+            if (pq1.top() != pq2.top())
+                return false;
+
+            pq1.pop();
+            pq2.pop();
+        }
+
+        return pq1.empty() && pq2.empty();
     }
 
     bool operator==(const bst& another) const {
@@ -470,8 +502,7 @@ public:
             else if (x->left || y->left)
                 return false;
 
-            // If the right subtree of both trees exists, push their addresses to stack.
-            // Otherwise, return false if only one right child exists.
+            // The same goes for the right subtree.
             if (x->right && y->right)
                 stack.push({x->right, y->right});
             else if (x->right || y->right)
@@ -479,6 +510,88 @@ public:
         }
 
         return true;
+    }
+
+    node* findDifferingNode(const bst& another) {
+        auto root1 = this->root;
+        auto root2 = another.root;
+
+        std::stack<std::pair<node*, node*>> s;
+        s.push({root1, root2});
+
+        while (!s.empty()) {
+            auto [node1, node2] = s.top();
+            s.pop();
+
+            if (node1 == nullptr || node2 == nullptr || node1->data != node2->data)
+                return node1;
+
+            if (node1->left != nullptr && node2->left != nullptr) {
+                s.push({node1->left, node2->left});
+            }
+
+            if (node1->right != nullptr && node2->right != nullptr) {
+                s.push({node1->right, node2->right});
+            }
+        }
+
+        return nullptr;
+    }
+
+    // TODO: handle sigenv.
+    bool isOneRotationDifference(const bst& another) {
+        auto diff = this->findDifferingNode(another);
+
+        if (diff != nullptr) {
+            auto tmp = *this;
+            auto diffPtrPtr = tmp.getNodePtrPtr(diff->key);
+            tmp.rotateRight(diffPtrPtr);
+
+            if (tmp == another)
+                return true;
+
+            tmp = another;
+            tmp.rotateLeft(diffPtrPtr);
+
+            if (tmp == another)
+                return true;
+        }
+
+        return false;
+    }
+
+    // TODO: add visited.
+    int rotationDistance(const bst& another) {
+        auto root1 = this->root;
+        auto root2 = another.root;
+        vector<D> v1, v2;
+
+        // Traverse the first tree and store the node values in a max heap
+        function<void(node*, vector<D>&)> traverse =
+                [&](node* node, vector<D>& pq) {
+                    if (node == nullptr)
+                        return;
+
+                    pq.push_back(node->data);
+                    traverse(node->left, pq);
+                    traverse(node->right, pq);
+                };
+
+        traverse(root1, v1);
+        traverse(root2, v2);
+
+        // Calculate the rotation distance
+        int distance = 0;
+        while (!v1.empty() && !v2.empty()) {
+            if (v1.back() != v2.back()) {
+                ++distance;
+            }
+
+            v1.pop_back();
+            v2.pop_back();
+        }
+
+        return distance + abs(static_cast<int>(v1.size() - v2.size()));
     }
 
     ~bst() {
