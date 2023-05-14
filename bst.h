@@ -706,6 +706,84 @@ public:
         return false;
     }
 
+    node** _insert_rbt(const T& k, node** p) {
+        if (*p == nullptr) {
+            *p = new node{k, colour::red};
+            return p;
+        }
+
+        if ((*p)->key == k)
+            return nullptr;
+
+        if ((*p)->key > k) {
+            auto res = _insert_rbt(k, &((*p)->left));
+
+            if (res == nullptr) {
+                return nullptr;
+            }
+
+            if (*res == ((*p)->left)) {
+                if ((*p)->data == colour::black)
+                    return nullptr;
+                else if ((*p) == root) {
+                    (*p)->data == colour::black;
+                    return nullptr;
+                } else
+                    return res;
+            } else {
+                if (*res == ((*p)->left->right))
+                    rotateLeft(&((*p)->left));
+
+                if ((*p)->right->data == colour::red) {
+                    (*p)->data = colour::red;
+                    (*p)->left->data = colour::black;
+                    (*p)->right->data = colour::black;
+                    return p;
+                } else {
+                    rotateRight(p);
+                    (*p)->data = colour::black;
+                    (*p)->left->data = colour::red;
+                    return nullptr;
+                }
+            }
+        } else {
+            auto res = _insert_rbt(k, &((*p)->right));
+
+            if (res == nullptr) {
+                return nullptr;
+            }
+
+            if (*res == ((*p)->right)) {
+                if ((*p)->data == colour::black)
+                    return nullptr;
+                else if ((*p) == root) {
+                    (*p)->data == colour::black;
+                    return nullptr;
+                } else
+                    return res;
+            } else {
+                if (*res == ((*p)->right->left))
+                    rotateLeft(&((*p)->right));
+
+                if ((*p)->left->data == colour::red) {
+                    (*p)->data = colour::red;
+                    (*p)->right->data = colour::black;
+                    (*p)->left->data = colour::black;
+                    return p;
+                } else {
+                    rotateRight(p);
+                    (*p)->data = colour::black;
+                    (*p)->right->data = colour::red;
+                    return nullptr;
+                }
+            }
+        }
+    }
+
+    void insert_rbt(const T& k) {
+        _insert_rbt(k, &root);
+    }
+
     bool remove(const T& key) {
         node** n = _find(key);
         if (*n == nullptr) {

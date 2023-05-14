@@ -51,6 +51,17 @@ int main() {
     myTree.insert(15, r);
     cout << "same_content(): " << (myTree.same_content(newTree) ? "true" : "false") << '\n';
 
+    bst<int, colour> y;
+    y.insert_rbt(60);
+    y.insert_rbt(33);
+    y.insert_rbt(84);
+    y.insert_rbt(15);
+    y.insert_rbt(51);
+    y.insert_rbt(5);
+    y.insert_rbt(27);
+    y.insert_rbt(80);
+    y.insert_rbt(17);
+    cout << y;
 
 //    for (int & TreeKey : TreeKeys) {
 //        myTree.insert(TreeKey, 0);
